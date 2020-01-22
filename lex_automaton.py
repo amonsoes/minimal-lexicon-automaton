@@ -1,8 +1,7 @@
 import pickle
 import os
 import graphviz
-
-from collections import OrderedDict
+from auto_state import State
 
 def renumber_states(ls):
     ls = sorted(ls, key= lambda x: x.num)
@@ -151,93 +150,3 @@ class LexAutomaton:
             g.edge(str(x.num),str(y.num),label=" " + label+ " ")
         
         return g
-            
-                
-        
-
-class State:
-    
-    next_id = 0
-    
-    def __init__(self, is_final, automaton):
-        self.is_final = is_final
-        if is_final:
-            automaton.F.add(self)
-        self.num = State.next_id
-        self.is_in_register = False
-        if self.is_in_register:
-            self.move_to_register()
-        self.transitions = OrderedDict()  
-        State.next_id += 1  
-        automaton.Q.append(self)
-
-    def __str__(self):
-        return str(self.num)
-
-    
-    def ids(self):
-        n_f = "F" if self.is_final else "N"
-        trans = "".join([label + str(target.num) for label, target in self.transitions.items()])
-        return n_f + trans
-    
-    def traverse(self, char):
-        if char in self.transitions.keys():
-            return self.transitions[char]
-        else:
-            return None
-
-    def add_transition(self,label,target_state):
-        self.transitions[label] = target_state
-        
-    def remove_transition(self,label):
-        del self.transitions[label]
-        
-    def has_children(self):
-        if len(self.transitions):
-        
-            return True if len(self.transitions) else False
-
-    def get_last_child(self):
-        if self.transitions.items():
-            return [i for i in self.transitions.items()][-1]
-
-    def move_to_register(self,automaton):
-        self.is_in_register = True
-        automaton.register.append(self)
-
-
-if __name__ == "__main__":
-    
-    user_input = input("Do you want load the automaton from a word list or from a file? w = from word list, f = from file")
-    if user_input == "f":
-        path = input("Enter path:")
-        try:
-            automaton = LexAutomaton.from_file(path)
-        except:
-            raise FileNotFoundError 
-    elif user_input == "w":
-        words = input("Paste Words:")
-        list = words.split(" ")
-        print(list)
-        automaton = LexAutomaton(list)
-    run = True
-    while run:
-        main_menu = input("What do you want to do? [1] traverse for word [2] draw automaton [3] return lexicon [4] exit")
-        if main_menu == "1":
-            word = input("Enter word: ")
-            check = automaton.traverse(word)
-            if check:
-                print("word is in lex")
-            else:
-                print("word is not in lex")
-        elif main_menu == "2":
-            g = automaton.draw_automaton()
-            g.render()
-        elif main_menu == "3":
-            print(automaton.return_lexicon(automaton.s))
-        else:
-            run = False
-    exit = input("Do you want to save your current automaton? [y/n]")
-    if exit == "y":
-        path = automaton.to_file()
-        print("File was saved here: ", path)
