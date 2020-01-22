@@ -1,7 +1,7 @@
 # minimal-lexicon-automaton
 
-This alogrithm creates a minimal lexicon automaton. Which efficiently stores a lexicon and reduces the time complexity
-of a lexicon look up immensely (given a large lexicon, of course)
+This alogrithm creates a minimal lexicon automaton, which efficiently stores a lexicon and reduces time complexity of a lexicon look up. It is based on the algorithm by Daciuk, as proposed in this paper:
+https://www.aclweb.org/anthology/J00-1002.pdf.
 
 The program runs through the terminal. There are no additional arguments for running the program as of this moment.
 
