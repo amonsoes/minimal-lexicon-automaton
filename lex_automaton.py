@@ -1,25 +1,8 @@
 import pickle
 import os
-import argparse
+import graphviz
 
 from collections import OrderedDict
-
-"""
-def dir_path(string):
-    if os.path.isdir(string):
-        return string
-    else:
-        raise NotADirectoryError(string)
-
-parser = argparse.ArgumentParser()
-parser.add_argument("-f", "--from_file", help="choose wether to load automaton from file or not", type=dir_path)
-args = parser.parse_args()
-
-if args.f:
-    auto = LexAutomaton.from_file("./lexautomaton")
-    print("automaton loaded")
-"""
-
 
 def renumber_states(ls):
     ls = sorted(ls, key= lambda x: x.num)
@@ -95,6 +78,7 @@ class LexAutomaton:
             counter += 1
         with open(path, "wb") as b:
             pickle.dump(self, b)
+        return path
     
     @classmethod
     def from_file(cls, path):
@@ -110,18 +94,64 @@ class LexAutomaton:
             if len(word) == 1:
                 if current.traverse(char) in self.F:
                     is_in_lex = True
-                    print("word is in lex")
-                    return None
+                    return True
                 else:
-                    print("word is not in lex")
-                    return None
+                    return False
             target = current.traverse(char)
             if target != None:
                 word = word[1:]
                 current = target
             else:
-                print("word is not in lex")
-                return None
+                return False
+
+
+    def return_lexicon(self, original, prefix="", ls = []):
+        current = original
+        word = prefix
+        copy_knot = [i for i in current.transitions.keys()]
+        for char in copy_knot:
+            while current not in self.F:
+                word += char
+                next = current.transitions[char]
+                current = next
+                if len(current.transitions.keys()) > 1:
+                    self.return_lexicon(current, word, ls)
+                    word = False # deal with erroneous last recursion step
+                    break                
+                elif current.transitions.keys():
+                    char = [i for i in current.transitions.keys()][0]
+                else:
+                    continue
+            if word:
+                ls.append(word)
+            current = original
+            word = prefix
+        return ls 
+         
+    
+    def draw_automaton(self):
+        
+        g = graphviz.Digraph("Automaton")
+        
+        for state in self.Q:
+            if state in self.F:
+                g.attr("node", style="bold")
+            if state == self.s:
+                g.node(str(state.num), label="-> " + str(state.num))
+            else:
+                g.node(str(state.num))
+            g.attr('node',style='solid')
+            
+        ls = []
+        for i in self.Q:
+            for key, value in i.transitions.items():
+                ls.append((i,key,value))
+        
+        for x,label,y in ls:
+            g.edge(str(x.num),str(y.num),label=" " + label+ " ")
+        
+        return g
+            
                 
         
 
@@ -175,9 +205,39 @@ class State:
         self.is_in_register = True
         automaton.register.append(self)
 
-words = ["acker","alle","alraune","as","aspekt","bahn","weltraum","zaun", "zombie"]
 
-auto = LexAutomaton(words)
-print([i.num for i in auto.Q])
-auto.traverse("ack")   
-
+if __name__ == "__main__":
+    
+    user_input = input("Do you want load the automaton from a word list or from a file? w = from word list, f = from file")
+    if user_input == "f":
+        path = input("Enter path:")
+        try:
+            automaton = LexAutomaton.from_file(path)
+        except:
+            raise FileNotFoundError 
+    elif user_input == "w":
+        words = input("Paste Words:")
+        list = words.split(" ")
+        print(list)
+        automaton = LexAutomaton(list)
+    run = True
+    while run:
+        main_menu = input("What do you want to do? [1] traverse for word [2] draw automaton [3] return lexicon [4] exit")
+        if main_menu == "1":
+            word = input("Enter word: ")
+            check = automaton.traverse(word)
+            if check:
+                print("word is in lex")
+            else:
+                print("word is not in lex")
+        elif main_menu == "2":
+            g = automaton.draw_automaton()
+            g.render()
+        elif main_menu == "3":
+            print(automaton.return_lexicon(automaton.s))
+        else:
+            run = False
+    exit = input("Do you want to save your current automaton? [y/n]")
+    if exit == "y":
+        path = automaton.to_file()
+        print("File was saved here: ", path)

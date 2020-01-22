@@ -1,0 +1,60 @@
+digraph Automaton {
+	0 [label="-> 0"]
+	node [style=solid]
+	1
+	node [style=solid]
+	2
+	node [style=solid]
+	3
+	node [style=solid]
+	4
+	node [style=solid]
+	node [style=bold]
+	5
+	node [style=solid]
+	6
+	node [style=solid]
+	7
+	node [style=solid]
+	8
+	node [style=solid]
+	9
+	node [style=solid]
+	10
+	node [style=solid]
+	11
+	node [style=solid]
+	12
+	node [style=solid]
+	13
+	node [style=solid]
+	14
+	node [style=solid]
+	15
+	node [style=solid]
+	16
+	node [style=solid]
+	17
+	node [style=solid]
+	0 -> 1 [label=" a "]
+	0 -> 15 [label=" b "]
+	1 -> 2 [label=" c "]
+	1 -> 6 [label=" l "]
+	1 -> 11 [label=" s "]
+	2 -> 3 [label=" k "]
+	3 -> 4 [label=" e "]
+	4 -> 5 [label=" r "]
+	6 -> 7 [label=" l "]
+	6 -> 8 [label=" r "]
+	7 -> 5 [label=" e "]
+	8 -> 9 [label=" a "]
+	9 -> 10 [label=" u "]
+	10 -> 7 [label=" n "]
+	11 -> 12 [label=" p "]
+	12 -> 13 [label=" e "]
+	13 -> 14 [label=" k "]
+	14 -> 5 [label=" t "]
+	15 -> 16 [label=" a "]
+	16 -> 17 [label=" h "]
+	17 -> 5 [label=" n "]
+}
